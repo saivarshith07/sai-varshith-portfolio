@@ -1,36 +1,47 @@
-# Sai Varshith — Portfolio
+# Sai Varshith, Portfolio
 
-A single-page portfolio site. Everything is self-contained in `index.html`
-(no build step, no dependencies).
+A React + Vite single-page portfolio. Dark/light themes, scroll-linked motion,
+content driven from one data file.
 
-## What's in this folder
-- `index.html` .............. the portfolio site
-- `Sai_Varshith_Pachipulusu_Resume.pdf` ... linked by the "Resume" buttons
-- `profile.jpg` (optional) .. add this yourself to show your photo (see below)
+## Run it
 
-Keep all files in the SAME folder so the resume link and photo work.
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production build into dist/
+npm run preview  # serve the built output
+```
 
-## Add your photo (optional)
-Save a headshot as exactly `profile.jpg` in this folder. It will replace the
-"SV" monogram automatically. No code change needed.
+## Where things live
 
-## Add your GitHub (optional)
-Open `index.html`, search for `github.com/your-username`, and replace it with
-your real profile URL. There is one spot, in the hero button row.
+```
+src/data/content.ts      <- ALL copy, projects, stats and links. Edit this first.
+src/components/          <- one file per section
+src/index.css            <- design tokens (colours, fonts) for both themes
+public/                  <- resume PDF, and profile.jpg if you add one
+```
 
-## Deploy it (free)
+To change anything on the page (a project, a number, a link), edit
+`src/data/content.ts`. The components read from it and nothing is hardcoded
+in the markup.
 
-Option A — GitHub Pages (nicest URL for a developer)
-1. Create a public repo named `yourusername.github.io`
-2. Upload everything in this folder, then commit
-3. Settings > Pages > Deploy from branch > main > /(root) > Save
-4. Live at https://yourusername.github.io
-   Resume at https://yourusername.github.io/Sai_Varshith_Pachipulusu_Resume.pdf
+### Adding a project
 
-Option B — Netlify Drop (fastest)
-1. Go to https://app.netlify.com/drop
-2. Drag this whole folder onto the page
-3. Sign up (free) to keep it, then rename the site
+Append to the `projects` array in `src/data/content.ts`:
 
-Both host the resume PDF automatically, so the direct PDF link works on any
-application form.
+- `kind: 'product'` shows under **Work at Vyapar**
+- `kind: 'open-source'` shows under **Personal projects**, with a source link
+- `featured: true` renders as a wide hero card (use sparingly, two is plenty)
+- `metric` is the big number that counts up when it scrolls into view
+
+## Deploy
+
+The build uses a relative base path, so `dist/` works on any static host
+without configuration.
+
+- **Netlify / Vercel**: build command `npm run build`, publish directory `dist`
+- **GitHub Pages**: push `dist/` to the `gh-pages` branch, or add an Actions
+  workflow that runs the build and uploads `dist` as the Pages artifact
+
+The resume PDF is served from `public/`, so it stays available at
+`<your-site>/Sai_Varshith_Pachipulusu_Resume.pdf` for application forms.

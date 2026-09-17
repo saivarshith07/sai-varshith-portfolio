@@ -1,0 +1,205 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------
+   Design tokens. Dark is the default; [data-theme="light"] flips
+   the surface/ink scale and deepens the accents for contrast.
+---------------------------------------------------------------- */
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  --color-bg: #08090b;
+  --color-surface: #0e1013;
+  --color-surface-2: #14171b;
+  --color-line: #21252b;
+  --color-line-2: #2d333b;
+  --color-ink: #f2f4f6;
+  --color-ink-2: #aab1ba;
+  --color-ink-3: #6f7782;
+  --color-mint: #5ee9a0;
+  --color-mint-deep: #34c77b;
+  --color-coral: #ff7a59;
+  --color-on-accent: #04130c;
+
+  --radius-card: 1.25rem;
+}
+
+[data-theme='light'] {
+  --color-bg: #f7f4ef;
+  --color-surface: #fffdfa;
+  --color-surface-2: #f1ece4;
+  --color-line: #e4ddd2;
+  --color-line-2: #d3c9ba;
+  --color-ink: #14161a;
+  --color-ink-2: #4e5560;
+  --color-ink-3: #808894;
+  --color-mint: #0e8f5c;
+  --color-mint-deep: #0a6f47;
+  --color-coral: #d9542b;
+  --color-on-accent: #ffffff;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  /* Tailwind v4's preflight gives buttons cursor:default, which reads as
+     "not clickable". Put the pointer back on everything interactive. */
+  a[href],
+  button:not(:disabled),
+  [role='button'],
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+
+
+  ::selection {
+    background: var(--color-mint);
+    color: var(--color-on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-mint);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* A quieter scrollbar that matches the theme. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-2);
+    border-radius: 99px;
+    border: 3px solid var(--color-bg);
+  }
+}
+
+@layer utilities {
+  /* Fine film grain over the whole page, keeps large flat areas alive. */
+  .grain::before {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .grid-lines {
+    background-image: linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 20%, transparent 78%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(120deg, var(--color-ink) 18%, var(--color-mint) 58%, var(--color-ink) 92%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .card-sheen {
+    background: radial-gradient(
+      420px circle at var(--mx, 50%) var(--my, 0%),
+      color-mix(in oklab, var(--color-mint) 12%, transparent),
+      transparent 70%
+    );
+  }
+
+  .animate-marquee {
+    animation: marquee 42s linear infinite;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-blink {
+    animation: blink 1.15s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-marquee,
+  .animate-blink {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Custom cursor. Deliberately OUTSIDE @layer base: unlayered rules
+   win over every cascade layer, which is the only way to reliably
+   suppress the native cursor on links and buttons.
+   The attribute is set by <Cursor> and only for a fine pointer with
+   motion allowed, so touch and reduced-motion keep the system cursor.
+---------------------------------------------------------------- */
+html[data-cursor='custom'],
+html[data-cursor='custom'] * {
+  cursor: none;
+}
+
+/* Below md the custom cursor is not rendered, so hand the pointer back. */
+@media (max-width: 767px) {
+  html[data-cursor='custom'],
+  html[data-cursor='custom'] * {
+    cursor: auto;
+  }
+  html[data-cursor='custom'] a[href],
+  html[data-cursor='custom'] button:not(:disabled),
+  html[data-cursor='custom'] [role='button'] {
+    cursor: pointer;
+  }
+}
