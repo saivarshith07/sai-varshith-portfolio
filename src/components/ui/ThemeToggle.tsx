@@ -21,7 +21,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
-      className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink-2 transition-[transform,border-color,color] duration-300 ease-out hover:scale-110 hover:border-line-2 hover:text-ink active:scale-95"
+      className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink-2 transition-colors duration-200 hover:border-line-2 hover:text-ink"
     >
       {theme === 'dark' ? (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">

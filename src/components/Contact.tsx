@@ -56,7 +56,7 @@ export default function Contact() {
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <a
               href={`mailto:${profile.email}`}
-              className="group inline-flex items-center gap-2 rounded-full bg-mint px-5 py-3 text-[15px] font-semibold text-on-accent transition-[transform,box-shadow,filter] duration-300 ease-out hover:scale-[1.03] hover:brightness-110 hover:shadow-[0_14px_38px_-12px_color-mix(in_oklab,var(--color-mint)_70%,transparent)] active:scale-[0.99]"
+              className="group inline-flex items-center gap-2 rounded-full bg-mint px-5 py-3 text-[15px] font-semibold text-on-accent transition-colors duration-200 hover:bg-mint-deep"
             >
               Email me
               <span className="transition-transform group-hover:translate-x-0.5">→</span>
@@ -64,7 +64,7 @@ export default function Contact() {
             <button
               type="button"
               onClick={copyEmail}
-              className="inline-flex items-center gap-2 rounded-full border border-line-2 px-5 py-3 text-[15px] font-semibold text-ink transition-[transform,border-color,background-color] duration-300 ease-out hover:scale-[1.03] hover:border-ink hover:bg-surface-2 active:scale-[0.99]"
+              className="inline-flex items-center gap-2 rounded-full border border-line-2 px-5 py-3 text-[15px] font-semibold text-ink transition-colors duration-200 hover:border-ink hover:bg-surface-2"
             >
               {copied ? 'Copied ✓' : 'Copy address'}
             </button>

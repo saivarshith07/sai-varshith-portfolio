@@ -68,7 +68,7 @@ export default function Nav() {
             href={profile.resume}
             target="_blank"
             rel="noopener"
-            className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-bg transition-[transform,box-shadow] duration-300 ease-out hover:scale-[1.04] hover:shadow-lg active:scale-[0.98] sm:inline-flex"
+            className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-bg transition-opacity duration-200 hover:opacity-85 sm:inline-flex"
           >
             Resume
           </a>

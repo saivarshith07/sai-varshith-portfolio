@@ -118,7 +118,9 @@ export default function Cursor() {
   if (!on) return null
 
   const layer = 'pointer-events-none fixed left-0 top-0 z-[70] hidden md:block'
-  const shape = 'block -translate-x-1/2 -translate-y-1/2 border border-white mix-blend-difference'
+  // `border-ink` flips with the theme, so it reads on cream and on near-black.
+  // A difference blend looked right on dark but washed out on light.
+  const shape = 'block -translate-x-1/2 -translate-y-1/2 border border-ink'
 
   return (
     <>
@@ -127,7 +129,7 @@ export default function Cursor() {
         <motion.span
           className={`${shape} rounded-full`}
           initial={false}
-          animate={{ width: 22, height: 22, opacity: lock ? 0 : 0.16 }}
+          animate={{ width: 22, height: 22, opacity: lock ? 0 : 0.2 }}
           transition={{ duration: 0.25 }}
         />
       </motion.div>
@@ -135,7 +137,7 @@ export default function Cursor() {
         <motion.span
           className={`${shape} rounded-full`}
           initial={false}
-          animate={{ width: 23, height: 23, opacity: lock ? 0 : 0.3 }}
+          animate={{ width: 23, height: 23, opacity: lock ? 0 : 0.38 }}
           transition={{ duration: 0.25 }}
         />
       </motion.div>
@@ -149,7 +151,7 @@ export default function Cursor() {
             width: lock ? lock.w : 24,
             height: lock ? lock.h : 24,
             borderRadius: lock ? lock.r : 999,
-            opacity: lock ? 1 : 0.6,
+            opacity: lock ? 1 : 0.8,
             scale: down ? 0.94 : 1,
           }}
           transition={{ type: 'spring', stiffness: 560, damping: 38, mass: 0.5 }}
@@ -159,7 +161,7 @@ export default function Cursor() {
       {/* the dot, pinned exactly where the pointer is */}
       <motion.div aria-hidden className={layer} style={{ x, y }}>
         <motion.span
-          className="block -translate-x-1/2 -translate-y-1/2 rounded-full bg-white mix-blend-difference"
+          className="block -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink"
           initial={false}
           animate={{ width: lock ? 0 : 5, height: lock ? 0 : 5, opacity: lock ? 0 : 1 }}
           transition={{ duration: 0.2 }}

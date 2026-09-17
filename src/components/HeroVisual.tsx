@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { animate, motion, useReducedMotion } from 'motion/react'
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useTransform,
+} from 'motion/react'
 import { shipsTo } from '../data/content'
 
 /**
@@ -31,12 +38,21 @@ function Bar({ className = '', accent = false }: { className?: string; accent?: 
 
 export default function HeroVisual() {
   const reduce = useReducedMotion()
-  const [w, setW] = useState(100)
   const [dragging, setDragging] = useState(false)
   const [touched, setTouched] = useState(false)
   const track = useRef<HTMLDivElement>(null)
 
-  const mode = modeFor(w)
+  // The width lives in a motion value, not in state. Driving it through
+  // setState re-rendered this whole tree on every animation frame, which is
+  // what made the resize stutter. Now only a breakpoint crossing re-renders.
+  const w = useMotionValue(100)
+  const widthPct = useTransform(w, (v) => `${v}%`)
+  const [mode, setMode] = useState<Mode>('desktop')
+
+  useMotionValueEvent(w, 'change', (v) => {
+    const next = modeFor(v)
+    setMode((prev) => (prev === next ? prev : next))
+  })
 
   // Loops through the breakpoints on its own, so the frame reads as a live
   // demo rather than a still. Stops for good once the visitor takes over.
@@ -52,24 +68,18 @@ export default function HeroVisual() {
         timer = window.setTimeout(done, ms)
       })
 
-    const glideTo = (from: number, to: number) =>
+    // Animating the motion value directly keeps this off the React render path.
+    const glideTo = (to: number) =>
       new Promise<void>((done) => {
-        running = animate(from, to, {
-          duration: 0.9,
-          ease,
-          onUpdate: (v) => setW(v),
-          onComplete: () => done(),
-        })
+        running = animate(w, to, { duration: 1.1, ease, onComplete: () => done() })
       })
 
     const run = async () => {
-      let at = 100
       await hold(1200)
       while (!cancelled) {
         for (const stop of [58, 34, 100]) {
           if (cancelled) return
-          await glideTo(at, stop)
-          at = stop
+          await glideTo(stop)
           if (cancelled) return
           await hold(1250)
         }
@@ -82,14 +92,14 @@ export default function HeroVisual() {
       running?.stop()
       window.clearTimeout(timer)
     }
-  }, [reduce, touched])
+  }, [reduce, touched, w])
 
   const setFromPointer = (clientX: number) => {
     const el = track.current
     if (!el) return
     const r = el.getBoundingClientRect()
     const pct = ((clientX - r.left) / r.width) * 100
-    setW(Math.max(MIN, Math.min(MAX, pct)))
+    w.set(Math.max(MIN, Math.min(MAX, pct)))
   }
 
   useEffect(() => {
@@ -128,9 +138,9 @@ export default function HeroVisual() {
 
         <div ref={track} className="relative flex h-[168px] items-stretch gap-1.5">
           {/* the resizable viewport */}
-          <div
+          <motion.div
             className="overflow-hidden rounded-lg border border-mint/25 bg-bg/40"
-            style={{ width: `${w}%`, transition: dragging ? 'none' : 'width 120ms linear' }}
+            style={{ width: widthPct }}
           >
             <div className="flex items-center gap-1 border-b border-line px-2 py-1.5">
               {['bg-coral/60', 'bg-ink-3/40', 'bg-mint/60'].map((c) => (
@@ -170,7 +180,7 @@ export default function HeroVisual() {
                 <Bar className="h-1.5 w-1/2" />
               </motion.div>
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* drag handle */}
           <div
@@ -179,7 +189,7 @@ export default function HeroVisual() {
             aria-label="Resize the preview"
             aria-valuemin={MIN}
             aria-valuemax={MAX}
-            aria-valuenow={Math.round(w)}
+            aria-valuenow={Math.round(w.get())}
             aria-valuetext={`${widthFor[mode]} pixels wide`}
             onPointerDown={(e) => {
               e.preventDefault()
@@ -191,7 +201,7 @@ export default function HeroVisual() {
               if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
               e.preventDefault()
               setTouched(true)
-              setW((v) => Math.max(MIN, Math.min(MAX, v + (e.key === 'ArrowRight' ? 6 : -6))))
+              w.set(Math.max(MIN, Math.min(MAX, w.get() + (e.key === 'ArrowRight' ? 6 : -6))))
             }}
             className={`group flex w-3 shrink-0 cursor-ew-resize items-center justify-center rounded-full transition-colors ${
               dragging ? 'bg-mint/25' : 'bg-mint/5 hover:bg-mint/15'

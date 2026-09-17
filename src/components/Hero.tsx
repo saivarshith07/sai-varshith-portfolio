@@ -87,7 +87,7 @@ export default function Hero() {
             <motion.div {...animate(4)} className="mt-9 flex flex-wrap items-center gap-3">
               <a
                 href={`mailto:${profile.email}`}
-                className="group inline-flex items-center gap-2 rounded-full bg-mint px-5 py-3 text-[15px] font-semibold text-on-accent transition-[transform,box-shadow,filter] duration-300 ease-out hover:scale-[1.03] hover:brightness-110 hover:shadow-[0_14px_38px_-12px_color-mix(in_oklab,var(--color-mint)_70%,transparent)] active:scale-[0.99]"
+                className="group inline-flex items-center gap-2 rounded-full bg-mint px-5 py-3 text-[15px] font-semibold text-on-accent transition-colors duration-200 hover:bg-mint-deep"
               >
                 Get in touch
                 <span className="transition-transform group-hover:translate-x-0.5">&#8594;</span>
@@ -96,7 +96,7 @@ export default function Hero() {
                 href={profile.resume}
                 target="_blank"
                 rel="noopener"
-                className="inline-flex items-center gap-2 rounded-full border border-line-2 px-5 py-3 text-[15px] font-semibold text-ink transition-[transform,border-color,background-color] duration-300 ease-out hover:scale-[1.03] hover:border-ink hover:bg-surface-2 active:scale-[0.99]"
+                className="inline-flex items-center gap-2 rounded-full border border-line-2 px-5 py-3 text-[15px] font-semibold text-ink transition-colors duration-200 hover:border-ink hover:bg-surface-2"
               >
                 Resume
               </a>
@@ -111,7 +111,7 @@ export default function Hero() {
                   target="_blank"
                   rel="noopener"
                   aria-label={l.label}
-                  className="grid h-11 w-11 place-items-center rounded-full border border-line text-ink-2 transition-[transform,border-color,color,background-color] duration-300 ease-out hover:scale-110 hover:border-ink hover:bg-surface-2 hover:text-ink active:scale-95"
+                  className="grid h-11 w-11 place-items-center rounded-full border border-line text-ink-2 transition-colors duration-200 hover:border-ink hover:text-ink"
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                     <path d={l.path} />
