@@ -10,6 +10,12 @@ export const profile = {
   github: 'https://github.com/saivarshith07',
   linkedin: 'https://linkedin.com/in/saivarshithp',
   resume: 'Sai_Varshith_Pachipulusu_Resume.pdf',
+  /**
+   * Set to 'profile.jpg' once that file is in public/. Left null, the hero
+   * shows the monogram and no request is made, so there is no 404 in the
+   * console of the deployed site.
+   */
+  photo: null as string | null,
   available: 'Open to frontend and full-stack roles',
   /** The line under the headline. Kept short: it is a tagline, not a summary. */
   tagline:

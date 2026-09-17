@@ -19,6 +19,7 @@ src/data/content.ts      <- ALL copy, projects, stats and links. Edit this first
 src/components/          <- one file per section
 src/index.css            <- design tokens (colours, fonts) for both themes
 public/                  <- resume PDF, and profile.jpg if you add one
+                            (then set `photo: 'profile.jpg'` in content.ts)
 ```
 
 To change anything on the page (a project, a number, a link), edit
