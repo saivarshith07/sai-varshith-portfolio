@@ -34,7 +34,7 @@ export default function Hero() {
   return (
     <section id="top" className="relative overflow-hidden pt-28 pb-20 md:pt-36 md:pb-24">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="grid-lines absolute inset-0 opacity-50" />
+        <div className="grid-lines absolute inset-0" />
         <div className="absolute -top-44 left-[18%] h-[480px] w-[620px] -translate-x-1/2 rounded-full bg-mint/10 blur-[130px]" />
       </div>
 
@@ -58,17 +58,21 @@ export default function Hero() {
 
             <motion.h1
               {...animate(1)}
-              className="mt-6 text-[clamp(2.4rem,5.2vw,4rem)] font-semibold leading-[1.03] tracking-[-0.035em]"
+              className="mt-6 text-[clamp(2.7rem,5.8vw,4.5rem)] font-semibold leading-[0.99] tracking-[-0.04em]"
             >
-              I build interfaces people{' '}
-              <span className="font-serif font-normal italic text-mint">rely on.</span>
+              From Pixels to{' '}
+              <span className="font-serif font-normal italic text-mint">Production.</span>
             </motion.h1>
 
-            <motion.p {...animate(2)} className="mt-6 max-w-xl text-[17.5px] leading-[1.7] text-ink-2">
+            <motion.p {...animate(2)} className="mt-6 max-w-xl text-[19.5px] leading-[1.6] text-ink">
+              {profile.tagline}
+            </motion.p>
+
+            <motion.p {...animate(3)} className="mt-5 max-w-xl text-[16px] leading-[1.85] text-ink/80">
               {profile.intro}
             </motion.p>
 
-            <motion.div {...animate(3)} className="mt-8 flex flex-wrap items-center gap-2">
+            <motion.div {...animate(4)} className="mt-8 flex flex-wrap items-center gap-2">
               <span className="mono-label mr-1">Core stack</span>
               {coreStack.map((t) => (
                 <span
@@ -84,7 +88,7 @@ export default function Hero() {
               ))}
             </motion.div>
 
-            <motion.div {...animate(4)} className="mt-9 flex flex-wrap items-center gap-3">
+            <motion.div {...animate(5)} className="mt-9 flex flex-wrap items-center gap-3">
               <a
                 href={`mailto:${profile.email}`}
                 className="group inline-flex items-center gap-2 rounded-full bg-mint px-5 py-3 text-[15px] font-semibold text-on-accent transition-colors duration-200 hover:bg-mint-deep"
@@ -121,7 +125,7 @@ export default function Hero() {
               </span>
             </motion.div>
 
-            <motion.p {...animate(5)} className="mt-8 flex items-center gap-2.5 text-[13.5px] text-ink-3">
+            <motion.p {...animate(6)} className="mt-8 flex items-center gap-2.5 text-[13.5px] text-ink-3">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-mint" />
@@ -131,13 +135,13 @@ export default function Hero() {
           </div>
 
           {/* ---- visual ---- */}
-          <motion.div {...animate(4)} className="w-full">
+          <motion.div {...animate(5)} className="w-full">
             <HeroVisual />
           </motion.div>
         </div>
 
         <motion.dl
-          {...animate(6)}
+          {...animate(7)}
           className="mt-20 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4"
         >
           {stats.map((s) => (
@@ -154,7 +158,7 @@ export default function Hero() {
         </motion.dl>
       </div>
 
-      <motion.div {...animate(7)} className="relative mt-14 overflow-hidden border-y border-line py-4">
+      <motion.div {...animate(8)} className="relative mt-14 overflow-hidden border-y border-line py-4">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-bg to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-bg to-transparent" />
         <div className="flex w-max animate-marquee">

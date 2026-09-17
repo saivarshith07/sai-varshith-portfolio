@@ -14,6 +14,7 @@
   --color-surface-2: #14171b;
   --color-line: #21252b;
   --color-line-2: #2d333b;
+  --color-grid: #2b3138;
   --color-ink: #f2f4f6;
   --color-ink-2: #aab1ba;
   --color-ink-3: #6f7782;
@@ -31,6 +32,7 @@
   --color-surface-2: #f1ece4;
   --color-line: #e4ddd2;
   --color-line-2: #d3c9ba;
+  --color-grid: #cfc4b2;
   --color-ink: #14161a;
   --color-ink-2: #4e5560;
   --color-ink-3: #808894;
@@ -112,10 +114,19 @@
   }
 
   .grid-lines {
-    background-image: linear-gradient(to right, var(--color-line) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
-    background-size: 72px 72px;
-    mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 20%, transparent 78%);
+    background-image: linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 100% 52% at 50% 0%, #000 20%, transparent 88%);
+  }
+
+  /* On a narrow screen the same cell size packs far more lines behind the
+     same text, so it stops reading as texture and starts competing. */
+  @media (max-width: 767px) {
+    .grid-lines {
+      background-size: 96px 96px;
+      opacity: 0.5;
+    }
   }
 
   .text-gradient {

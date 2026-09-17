@@ -9,18 +9,22 @@ const INTERACTIVE = 'a[href], button:not(:disabled), [role="button"], [role="sli
 const PULL = 0.18
 const MAX_PULL = 14
 
+/** Segments in the trail. More reads as a longer tail. */
+const SEGMENTS = 14
+/** How hard each point chases the one ahead of it. Lower drags further. */
+const CHASE = 0.44
+
 /**
- * A custom cursor: a dot pinned to the pointer, a ring just behind it, and
- * two softer ghosts further back. Move fast and they string out into a
- * smear; slow down and they collect back into one shape.
+ * A custom cursor: a thin line that trails the pointer and tapers away to
+ * nothing, plus a ring that snaps onto interactive elements and pulls them
+ * gently toward the pointer.
  *
- * It also snaps onto interactive elements and pulls them gently toward the
- * pointer. The pull is written to the `translate` CSS property rather than
- * `transform`, so it can never clobber a Tailwind transform utility.
+ * The trail is written straight to the DOM inside a rAF loop, so none of it
+ * touches React's render path. The loop parks itself once the tail has caught
+ * up and nothing is moving.
  *
- * The native cursor is hidden only while this is mounted, and this is only
- * mounted for a fine pointer with motion allowed. Everyone else keeps the
- * system cursor exactly as it was.
+ * Only mounted for a fine pointer with motion allowed, so touch and
+ * reduced-motion visitors keep the native cursor untouched.
  */
 export default function Cursor() {
   const [on, setOn] = useState(false)
@@ -29,20 +33,57 @@ export default function Cursor() {
 
   const held = useRef<HTMLElement | null>(null)
   const base = useRef({ cx: 0, cy: 0 })
+  const segs = useRef<(SVGLineElement | null)[]>([])
+  const pts = useRef(Array.from({ length: SEGMENTS + 1 }, () => ({ x: -200, y: -200 })))
+  const target = useRef({ x: -200, y: -200 })
 
   const x = useMotionValue(-200)
   const y = useMotionValue(-200)
-
-  // Four followers, each lagging a little more than the last.
-  const ring = { x: useSpring(x, { stiffness: 900, damping: 45, mass: 0.35 }), y: useSpring(y, { stiffness: 900, damping: 45, mass: 0.35 }) }
-  const g1 = { x: useSpring(x, { stiffness: 260, damping: 26, mass: 0.6 }), y: useSpring(y, { stiffness: 260, damping: 26, mass: 0.6 }) }
-  const g2 = { x: useSpring(x, { stiffness: 130, damping: 22, mass: 0.8 }), y: useSpring(y, { stiffness: 130, damping: 22, mass: 0.8 }) }
+  const rx = useSpring(x, { stiffness: 900, damping: 45, mass: 0.35 })
+  const ry = useSpring(y, { stiffness: 900, damping: 45, mass: 0.35 })
 
   useEffect(() => {
     if (!window.matchMedia('(pointer: fine)').matches) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     setOn(true)
     document.documentElement.dataset.cursor = 'custom'
+
+    let frame = 0
+
+    const tick = () => {
+      const p = pts.current
+      p[0].x = target.current.x
+      p[0].y = target.current.y
+
+      let moved = 0
+      for (let i = 1; i < p.length; i++) {
+        const dx = p[i - 1].x - p[i].x
+        const dy = p[i - 1].y - p[i].y
+        p[i].x += dx * CHASE
+        p[i].y += dy * CHASE
+        moved += Math.abs(dx) + Math.abs(dy)
+      }
+
+      for (let i = 0; i < SEGMENTS; i++) {
+        const el = segs.current[i]
+        if (!el) continue
+        el.setAttribute('x1', String(p[i].x))
+        el.setAttribute('y1', String(p[i].y))
+        el.setAttribute('x2', String(p[i + 1].x))
+        el.setAttribute('y2', String(p[i + 1].y))
+      }
+
+      // Nothing left to interpolate: stop burning frames until the next move.
+      if (moved < 0.4) {
+        frame = 0
+        return
+      }
+      frame = requestAnimationFrame(tick)
+    }
+
+    const wake = () => {
+      if (!frame) frame = requestAnimationFrame(tick)
+    }
 
     const drop = () => {
       const el = held.current
@@ -73,6 +114,9 @@ export default function Cursor() {
     const clamp = (n: number) => Math.max(-MAX_PULL, Math.min(MAX_PULL, n))
 
     const move = (e: PointerEvent) => {
+      target.current = { x: e.clientX, y: e.clientY }
+      wake()
+
       const el = (e.target as HTMLElement | null)?.closest<HTMLElement>(INTERACTIVE)
 
       if (!el) {
@@ -110,6 +154,7 @@ export default function Cursor() {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('pointerdown', press)
       window.removeEventListener('pointerup', release)
+      if (frame) cancelAnimationFrame(frame)
       delete document.documentElement.dataset.cursor
       drop()
     }
@@ -117,54 +162,48 @@ export default function Cursor() {
 
   if (!on) return null
 
-  const layer = 'pointer-events-none fixed left-0 top-0 z-[70] hidden md:block'
-  // `border-ink` flips with the theme, so it reads on cream and on near-black.
-  // A difference blend looked right on dark but washed out on light.
-  const shape = 'block -translate-x-1/2 -translate-y-1/2 border border-ink'
-
   return (
     <>
-      {/* the smear: softer, slower, only while nothing is locked */}
-      <motion.div aria-hidden className={layer} style={{ x: g2.x, y: g2.y }}>
-        <motion.span
-          className={`${shape} rounded-full`}
-          initial={false}
-          animate={{ width: 22, height: 22, opacity: lock ? 0 : 0.2 }}
-          transition={{ duration: 0.25 }}
-        />
-      </motion.div>
-      <motion.div aria-hidden className={layer} style={{ x: g1.x, y: g1.y }}>
-        <motion.span
-          className={`${shape} rounded-full`}
-          initial={false}
-          animate={{ width: 23, height: 23, opacity: lock ? 0 : 0.38 }}
-          transition={{ duration: 0.25 }}
-        />
-      </motion.div>
+      {/* the trail, tapering and fading toward the tail */}
+      <svg
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-[69] hidden h-full w-full text-mint md:block"
+      >
+        {Array.from({ length: SEGMENTS }, (_, i) => {
+          const t = 1 - i / SEGMENTS
+          return (
+            <line
+              key={i}
+              ref={(el) => {
+                segs.current[i] = el
+              }}
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth={t * 1.8 + 0.3}
+              opacity={lock ? 0 : t * t * 0.75}
+              style={{ transition: 'opacity 220ms ease' }}
+            />
+          )
+        })}
+      </svg>
 
-      {/* the ring, which is also what wraps an element on hover */}
-      <motion.div aria-hidden className={layer} style={{ x: ring.x, y: ring.y }}>
+      {/* the ring, which also wraps whatever it snaps onto */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none fixed left-0 top-0 z-[70] hidden md:block"
+        style={{ x: rx, y: ry }}
+      >
         <motion.span
-          className={`${shape} border-2`}
+          className="block -translate-x-1/2 -translate-y-1/2 border border-ink"
           initial={false}
           animate={{
-            width: lock ? lock.w : 24,
-            height: lock ? lock.h : 24,
+            width: lock ? lock.w : 22,
+            height: lock ? lock.h : 22,
             borderRadius: lock ? lock.r : 999,
-            opacity: lock ? 1 : 0.8,
+            opacity: lock ? 1 : 0.75,
             scale: down ? 0.94 : 1,
           }}
           transition={{ type: 'spring', stiffness: 560, damping: 38, mass: 0.5 }}
-        />
-      </motion.div>
-
-      {/* the dot, pinned exactly where the pointer is */}
-      <motion.div aria-hidden className={layer} style={{ x, y }}>
-        <motion.span
-          className="block -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink"
-          initial={false}
-          animate={{ width: lock ? 0 : 5, height: lock ? 0 : 5, opacity: lock ? 0 : 1 }}
-          transition={{ duration: 0.2 }}
         />
       </motion.div>
     </>

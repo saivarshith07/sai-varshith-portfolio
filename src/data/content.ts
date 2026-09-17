@@ -11,8 +11,11 @@ export const profile = {
   linkedin: 'https://linkedin.com/in/saivarshithp',
   resume: 'Sai_Varshith_Pachipulusu_Resume.pdf',
   available: 'Open to frontend and full-stack roles',
+  /** The line under the headline. Kept short: it is a tagline, not a summary. */
+  tagline:
+    'Building thoughtful interfaces, reliable systems, and everything in between.',
   intro:
-    "Frontend-focused full-stack engineer. I work in React, Next.js and TypeScript, build the services behind them in NestJS, and ship the result to web, desktop and mobile. Three years of it on software that small businesses run on every day.",
+    'Three years at Vyapar on software that small businesses bill and sell on. React and TypeScript up front, the NestJS services behind them, shipped from one codebase to web, Windows, macOS and Android.',
 }
 
 /** The stack worth leading with. `lead` items get the accent treatment. */
