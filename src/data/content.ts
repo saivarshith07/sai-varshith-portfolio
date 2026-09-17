@@ -319,6 +319,14 @@ export const highlights = [
   },
 ]
 
+/** Shortcuts surfaced in the hero, so the first screen can reach the rest. */
+export const quickNav = [
+  { id: 'projects', label: 'Projects', note: '9' },
+  { id: 'work', label: 'Experience', note: null },
+  { id: 'skills', label: 'Toolkit', note: null },
+  { id: 'contact', label: 'Contact', note: null },
+]
+
 export const navItems = [
   { id: 'about', label: 'About' },
   { id: 'work', label: 'Experience' },

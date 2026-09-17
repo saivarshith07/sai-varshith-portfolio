@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'motion/react'
-import { profile, stats, marquee, coreStack } from '../data/content'
+import { profile, stats, marquee, coreStack, quickNav } from '../data/content'
 import CountUp from './ui/CountUp'
 import HeroVisual from './HeroVisual'
 import Avatar from './ui/Avatar'
@@ -125,7 +125,35 @@ export default function Hero() {
               </span>
             </motion.div>
 
-            <motion.p {...animate(6)} className="mt-8 flex items-center gap-2.5 text-[13.5px] text-ink-3">
+            <motion.nav
+              {...animate(6)}
+              aria-label="Jump to a section"
+              className="mt-9 flex flex-wrap items-center gap-x-0.5 gap-y-2 border-t border-line pt-6"
+            >
+              <span className="mono-label mr-2">Jump to</span>
+              {quickNav.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className="group inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[14.5px] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+                >
+                  {item.label}
+                  {item.note && (
+                    <span className="font-mono text-[11px] text-ink-3 group-hover:text-mint">
+                      {item.note}
+                    </span>
+                  )}
+                  <span
+                    aria-hidden
+                    className="text-ink-3 transition-transform duration-200 group-hover:translate-y-0.5 group-hover:text-mint"
+                  >
+                    &#8595;
+                  </span>
+                </a>
+              ))}
+            </motion.nav>
+
+            <motion.p {...animate(7)} className="mt-7 flex items-center gap-2.5 text-[13.5px] text-ink-3">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-mint" />
@@ -141,7 +169,7 @@ export default function Hero() {
         </div>
 
         <motion.dl
-          {...animate(7)}
+          {...animate(8)}
           className="mt-20 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line md:grid-cols-4"
         >
           {stats.map((s) => (
@@ -158,7 +186,7 @@ export default function Hero() {
         </motion.dl>
       </div>
 
-      <motion.div {...animate(8)} className="relative mt-14 overflow-hidden border-y border-line py-4">
+      <motion.div {...animate(9)} className="relative mt-14 overflow-hidden border-y border-line py-4">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-bg to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-bg to-transparent" />
         <div className="flex w-max animate-marquee">
